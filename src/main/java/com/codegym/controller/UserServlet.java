@@ -1,5 +1,6 @@
 package com.codegym.controller;
 
+import com.codegym.dao.IUserDAO;
 import com.codegym.dao.UserDAO;
 import com.codegym.model.User;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 @WebServlet(name = "UserServlet", urlPatterns = "/users")
 public class UserServlet extends HttpServlet {
-    private UserDAO userDAO;
+    private IUserDAO userDAO;
 
     public void init() {
         userDAO = new UserDAO();
@@ -72,9 +73,10 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+    // Hiển thị danh sách user bằng Stored Procedure
     private void listUser(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
-        List<User> listUser = userDAO.selectAllUsers();
+        List<User> listUser = userDAO.selectAllUsersSP();
         request.setAttribute("listUser", listUser);
         RequestDispatcher dispatcher = request.getRequestDispatcher("user/list.jsp");
         dispatcher.forward(request, response);
@@ -114,6 +116,7 @@ public class UserServlet extends HttpServlet {
         response.sendRedirect("users");
     }
 
+    // Sửa thông tin user bằng Stored Procedure
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int id = Integer.parseInt(request.getParameter("id"));
@@ -122,14 +125,15 @@ public class UserServlet extends HttpServlet {
         String country = request.getParameter("country");
 
         User user = new User(id, name, email, country);
-        userDAO.updateUser(user);
+        userDAO.updateUserSP(user);
         response.sendRedirect("users");
     }
 
+    // Xoá user bằng Stored Procedure
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         int id = Integer.parseInt(request.getParameter("id"));
-        userDAO.deleteUser(id);
+        userDAO.deleteUserSP(id);
         response.sendRedirect("users");
     }
 }
